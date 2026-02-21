@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naveen | Video Editor — Scroll-Stopping Edits</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   COLOR TOKENS
+   #0e4725  → dark green (primary bg / accent)
+   #85d69e  → light green (highlight / accent)
+   #ffffff  → white (text on dark / bg)
+   #000000  → black (text / dark card)
+═══════════════════════════════════════ */
+:root {
+  --green-dark:  #0e4725;
+  --green-light: #85d69e;
+  --white:       #ffffff;
+  --black:       #000000;
+  --bg:          #0a0a0a;
+  --card:        #111111;
+  --card2:       #161616;
+  --border:      rgba(255,255,255,0.08);
+  --border2:     rgba(133,214,158,0.25);
+  --muted:       rgba(255,255,255,0.45);
+  --muted2:      rgba(255,255,255,0.25);
+  --green-glow:  rgba(14,71,37,0.4);
+  --green-glow2: rgba(133,214,158,0.12);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:2px;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Inter',sans-serif;}
+
+/* ── NAVBAR ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 40px;
+  background:rgba(10,10,10,0.85);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-size:18px;font-weight:800;letter-spacing:-0.3px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .pulse{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green-light);
+  box-shadow:0 0 10px var(--green-light);
+  animation:pulseAnim 2s ease infinite;
+}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{
+  font-size:14px;font-weight:500;color:var(--muted);
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--white);}
+.nav-btn{
+  background:var(--green-dark);
+  border:1px solid var(--green-light);
+  color:var(--white);
+  padding:9px 20px;border-radius:8px;
+  font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.nav-btn:hover{background:var(--green-light);color:var(--black);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:130px 20px 80px;
+  position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse,rgba(14,71,37,.35) 0%,transparent 70%);
+  pointer-events:none;
+}
+/* Floating testimonial cards */
+.ftc{
+  position:absolute;
+  background:var(--card2);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  padding:12px 16px;
+  display:flex;align-items:flex-start;gap:10px;
+  max-width:240px;
+  backdrop-filter:blur(16px);
+  animation:floatY 5s ease-in-out infinite;
+  z-index:2;
+}
+.ftc-av{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  border:2px solid var(--green-light);
+}
+.ftc-handle{font-size:12px;font-weight:700;color:var(--white);}
+.ftc-text{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.ftc-reply{
+  margin-top:8px;
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:600;
+  color:var(--green-light);
+  background:rgba(133,214,158,.1);
+  border:1px solid rgba(133,214,158,.2);
+  border-radius:20px;padding:3px 10px;
+}
+.ftc1{top:22%;left:3%;animation-delay:0s;}
+.ftc2{top:30%;right:3%;animation-delay:1.8s;}
+/* Trusted by strip */
+.trusted-strip{
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  top:calc(50% - 130px);
+  display:flex;align-items:center;gap:12px;
+  background:rgba(14,71,37,.3);
+  border:1px solid var(--border2);
+  border-radius:100px;
+  padding:8px 20px;
+  white-space:nowrap;
+}
+.trusted-avatars{display:flex;}
+.t-av{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--bg);
+  margin-left:-8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  background:var(--green-dark);
+}
+.t-av:first-child{margin-left:0;}
+.trusted-text{font-size:12px;font-weight:600;color:var(--white);}
+.trusted-text span{color:var(--green-light);}
+
+.hero-heading{
+  font-size:clamp(56px,9vw,108px);
+  font-weight:900;
+  line-height:.95;
+  letter-spacing:-3px;
+  position:relative;z-index:1;
+  animation:fadeUp .7s ease both;
+}
+.hero-heading .hl{
+  color:var(--green-light);
+  display:block;
+}
+.hero-sub{
+  font-size:clamp(15px,1.5vw,18px);
+  color:var(--muted);
+  max-width:460px;
+  line-height:1.7;
+  margin:20px auto 36px;
+  animation:fadeUp .7s .1s ease both;
+}
+.hero-actions{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .7s .2s ease both;
+  margin-bottom:20px;
+}
+.btn-green{
+  background:var(--green-dark);
+  border:1px solid var(--green-light);
+  color:var(--white);
+  padding:13px 28px;border-radius:8px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 0 30px rgba(14,71,37,.5);
+}
+.btn-green:hover{background:var(--green-light);color:var(--black);}
+.btn-outline{
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--white);
+  padding:13px 28px;border-radius:8px;
+  font-size:15px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--green-light);}
+.hero-note{
+  font-size:12px;color:var(--muted2);
+  animation:fadeUp .7s .3s ease both;
+}
+/* Scrolling badges row */
+.badge-scroll{
+  margin-top:40px;
+  overflow:hidden;width:100%;
+  animation:fadeUp .7s .4s ease both;
+}
+.badge-track{
+  display:flex;gap:10px;
+  animation:scrollLeft 18s linear infinite;
+  width:max-content;
+}
+.badge-item{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:7px 18px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  white-space:nowrap;display:flex;align-items:center;gap:7px;
+}
+.badge-item .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green-light);
+}
+
+/* ── MARQUEE STRIP ── */
+.marquee-wrap{
+  background:var(--green-dark);
+  padding:14px 0;overflow:hidden;
+  border-top:1px solid rgba(133,214,158,.2);
+  border-bottom:1px solid rgba(133,214,158,.2);
+}
+.marquee-inner{
+  display:flex;gap:0;
+  animation:scrollLeft 22s linear infinite;
+  width:max-content;
+}
+.m-item{
+  padding:0 32px;
+  font-size:13px;font-weight:700;letter-spacing:.5px;
+  color:rgba(255,255,255,.6);
+  border-right:1px solid rgba(255,255,255,.15);
+  white-space:nowrap;display:flex;align-items:center;gap:8px;
+}
+.m-item .ic{opacity:.7;}
+
+/* ── SECTION BASE ── */
+.sec{padding:100px 40px;}
+.sec-label{
+  display:inline-block;
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--green-light);
+  background:rgba(133,214,158,.08);
+  border:1px solid rgba(133,214,158,.2);
+  border-radius:100px;padding:5px 14px;
+  margin-bottom:16px;
+}
+.sec-title{
+  font-size:clamp(32px,4.5vw,52px);
+  font-weight:800;letter-spacing:-1px;line-height:1.1;
+  margin-bottom:14px;
+}
+.sec-title .hl{color:var(--green-light);}
+.sec-sub{
+  font-size:16px;color:var(--muted);
+  max-width:500px;line-height:1.7;
+}
+
+/* ── ABOUT ── */
+#about{background:var(--bg);}
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;
+  max-width:1100px;margin:0 auto;
+}
+.about-quote{
+  font-size:clamp(22px,2.5vw,32px);
+  font-weight:800;line-height:1.3;letter-spacing:-.5px;
+  color:var(--white);margin-bottom:32px;
+}
+.about-quote strong{color:var(--green-light);}
+.about-counters{
+  display:flex;gap:0;
+  border:1px solid var(--border);border-radius:16px;overflow:hidden;
+}
+.cnt{
+  flex:1;padding:24px 20px;text-align:center;
+  border-right:1px solid var(--border);
+}
+.cnt:last-child{border-right:none;}
+.cnt-num{
+  font-size:36px;font-weight:900;letter-spacing:-1px;
+  color:var(--green-light);display:block;line-height:1;
+}
+.cnt-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
+/* right card */
+.about-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+  position:relative;
+}
+.about-card-top{
+  background:linear-gradient(135deg,var(--green-dark),#1a6b3a);
+  padding:32px 32px 24px;
+}
+.ac-name{font-size:22px;font-weight:800;}
+.ac-role{font-size:14px;color:rgba(255,255,255,.7);margin-top:4px;}
+.ac-avail{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;
+  background:rgba(133,214,158,.15);
+  border:1px solid rgba(133,214,158,.3);
+  border-radius:100px;padding:4px 12px;
+  font-size:12px;font-weight:600;color:var(--green-light);
+}
+.ac-avail .dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);animation:pulseAnim 1.5s ease infinite;}
+.about-card-body{padding:28px 32px;}
+.skill-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.sk{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:6px;padding:5px 12px;
+  font-size:12px;font-weight:600;color:var(--muted);
+}
+.tools-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.tool-row{display:flex;flex-wrap:wrap;gap:8px;}
+.tool{
+  background:rgba(133,214,158,.06);border:1px solid rgba(133,214,158,.15);
+  border-radius:6px;padding:5px 12px;
+  font-size:12px;font-weight:600;color:var(--green-light);
+}
+.li-link{
+  display:flex;align-items:center;gap:8px;
+  margin-top:20px;padding:12px 14px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:10px;font-size:13px;font-weight:600;
+  color:var(--green-light);transition:background .2s;
+}
+.li-link:hover{background:rgba(133,214,158,.1);}
+
+/* ── SERVICES ── */
+#services{background:var(--card);}
+.svc-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  max-width:1100px;margin:0 auto 56px;flex-wrap:wrap;gap:20px;
+}
+.svc-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:2px;max-width:1100px;margin:0 auto;
+}
+.svc-card{
+  background:var(--bg);
+  padding:36px 32px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;
+}
+.svc-card:hover{border-color:var(--border2);transform:translateY(-4px);}
+.svc-card.wide{grid-column:span 2;}
+.svc-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 90% 10%,rgba(133,214,158,.05),transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.svc-card:hover::after{opacity:1;}
+.svc-num{
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  color:var(--green-light);margin-bottom:16px;
+}
+.svc-name{font-size:18px;font-weight:700;margin-bottom:10px;}
+.svc-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.svc-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.stag{
+  background:rgba(133,214,158,.08);
+  border:1px solid rgba(133,214,158,.15);
+  border-radius:100px;padding:4px 12px;
+  font-size:11px;font-weight:700;color:var(--green-light);
+}
+
+/* ── PROCESS ── */
+#process{background:var(--bg);}
+.process-inner{max-width:900px;margin:56px auto 0;}
+.proc-item{
+  display:grid;grid-template-columns:60px 1fr auto;
+  gap:24px;align-items:center;
+  padding:28px 32px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  margin-bottom:3px;
+  transition:border-color .3s;
+}
+.proc-item:hover{border-color:var(--border2);}
+.proc-num{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(133,214,158,.1);
+  border:1px solid rgba(133,214,158,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:var(--green-light);
+}
+.proc-name{font-size:17px;font-weight:700;margin-bottom:5px;}
+.proc-desc{font-size:14px;color:var(--muted);line-height:1.6;}
+.proc-badge{
+  background:rgba(133,214,158,.1);
+  border:1px solid rgba(133,214,158,.2);
+  border-radius:100px;padding:5px 14px;
+  font-size:12px;font-weight:700;color:var(--green-light);
+  white-space:nowrap;
+}
+
+/* ── WORKS ── */
+#works{background:var(--card);}
+.works-filter{
+  display:flex;gap:8px;flex-wrap:wrap;
+  max-width:1100px;margin:0 auto 36px;
+}
+.wf{
+  background:transparent;border:1px solid var(--border);
+  border-radius:8px;padding:7px 18px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.wf.on,.wf:hover{background:var(--green-dark);border-color:var(--green-light);color:var(--white);}
+.works-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;max-width:1100px;margin:0 auto;
+}
+.wc{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  transition:transform .3s,border-color .3s;cursor:pointer;
+}
+.wc:hover{transform:translateY(-6px);border-color:var(--border2);}
+.wc-thumb{
+  aspect-ratio:16/10;
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;position:relative;
+}
+.wc-play{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s;
+}
+.wc:hover .wc-play{opacity:1;}
+.play-circle{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--black);
+}
+.wc-info{padding:18px 22px;}
+.wc-cat{
+  font-size:10px;font-weight:800;letter-spacing:2px;
+  text-transform:uppercase;color:var(--green-light);margin-bottom:6px;
+}
+.wc-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.wc-meta{font-size:12px;color:var(--muted);}
+.wc.span2{grid-column:span 2;}
+.wc.span2 .wc-thumb{aspect-ratio:2.4/1;font-size:80px;}
+
+/* ── PROBLEMS vs SOLUTIONS ── */
+#solution{background:var(--bg);}
+.vs-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:3px;max-width:900px;margin:56px auto 0;
+}
+.vs-col{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:36px 32px;
+}
+.vs-col.sol{
+  background:rgba(14,71,37,.25);
+  border-color:rgba(133,214,158,.2);
+}
+.vs-head{
+  font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:24px;
+}
+.vs-head.prob{color:rgba(255,255,255,.4);}
+.vs-head.solu{color:var(--green-light);}
+.vs-list{list-style:none;}
+.vs-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+  font-size:14px;font-weight:500;
+}
+.vs-list li:last-child{border-bottom:none;}
+.xi{color:rgba(255,255,255,.25);font-size:15px;flex-shrink:0;margin-top:1px;}
+.ci{color:var(--green-light);font-size:15px;flex-shrink:0;margin-top:1px;}
+
+/* ── PRICING ── */
+#pricing{background:var(--card);}
+.pricing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;max-width:1000px;margin:56px auto 0;
+}
+.pc{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:20px;padding:36px 30px;
+  position:relative;transition:transform .3s;
+}
+.pc:hover{transform:translateY(-5px);}
+.pc.pop{
+  border-color:var(--green-light);
+  background:rgba(14,71,37,.15);
+}
+.pop-badge{
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--green-dark);border:1px solid var(--green-light);
+  color:var(--white);font-size:10px;font-weight:800;letter-spacing:1px;
+  padding:4px 14px;border-radius:0 0 10px 10px;white-space:nowrap;
+}
+.pc-plan{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:10px;}
+.pc-price{
+  font-size:52px;font-weight:900;letter-spacing:-2px;
+  color:var(--white);line-height:1;margin-bottom:4px;
+}
+.pc-period{font-size:14px;color:var(--muted);margin-bottom:8px;}
+.pc-note{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.5;}
+.pc-div{height:1px;background:var(--border);margin-bottom:24px;}
+.pc-feat{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:13px;margin-bottom:12px;color:rgba(255,255,255,.8);
+}
+.f-check{
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(133,214,158,.12);
+  border:1px solid rgba(133,214,158,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--green-light);flex-shrink:0;margin-top:1px;
+}
+.pc-btn{
+  display:block;width:100%;margin-top:28px;
+  padding:13px;border-radius:10px;
+  font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.pc-btn-o{
+  background:transparent;border:1px solid var(--border2);color:var(--white);
+}
+.pc-btn-o:hover{border-color:var(--green-light);background:rgba(133,214,158,.06);}
+.pc-btn-f{
+  background:var(--green-dark);border:1px solid var(--green-light);color:var(--white);
+  box-shadow:0 8px 24px rgba(14,71,37,.5);
+}
+.pc-btn-f:hover{background:var(--green-light);color:var(--black);}
+
+/* ── REVIEWS ── */
+#reviews{background:var(--bg);}
+.reviews-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;max-width:1100px;margin:56px auto 0;
+}
+/* Twitter-style cards */
+.rv{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:24px;
+  transition:border-color .3s;
+}
+.rv:hover{border-color:var(--border2);}
+.rv-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.rv-av{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;flex-shrink:0;
+  border:2px solid var(--green-light);
+  background:var(--green-dark);
+}
+.rv-handle{font-size:14px;font-weight:700;}
+.rv-twitter{margin-left:auto;font-size:16px;color:var(--muted2);}
+.rv-text{font-size:14px;line-height:1.65;color:rgba(255,255,255,.75);}
+.rv-reply{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:14px;
+  background:rgba(133,214,158,.08);border:1px solid rgba(133,214,158,.15);
+  border-radius:100px;padding:4px 12px;
+  font-size:11px;font-weight:700;color:var(--green-light);cursor:pointer;
+}
+
+/* ── CTA SECTION ── */
+#cta{background:var(--card);}
+.cta-inner{
+  max-width:700px;margin:0 auto;text-align:center;
+}
+.cta-card{
+  background:linear-gradient(135deg,var(--green-dark) 0%,#1a6b3a 100%);
+  border:1px solid rgba(133,214,158,.3);
+  border-radius:24px;padding:56px 48px;
+  margin-top:48px;position:relative;overflow:hidden;
+}
+.cta-card::before{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:250px;height:250px;
+  background:radial-gradient(circle,rgba(133,214,158,.15),transparent 70%);
+}
+.cta-title{font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin-bottom:12px;}
+.cta-sub{font-size:15px;color:rgba(255,255,255,.75);margin-bottom:32px;}
+.cta-email{
+  font-size:14px;color:rgba(255,255,255,.6);margin-top:16px;
+}
+.cta-email a{color:var(--green-light);font-weight:600;}
+.cta-tags{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px;
+}
+.cta-tag{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:100px;padding:6px 16px;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.8);
+}
+
+/* ── FAQ ── */
+#faq{background:var(--bg);}
+.faq-list{max-width:780px;margin:56px auto 0;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{
+  width:100%;background:none;border:none;
+  color:var(--white);text-align:left;
+  padding:22px 0;
+  font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  transition:color .2s;
+}
+.faq-q:hover{color:var(--green-light);}
+.faq-icon{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(133,214,158,.1);border:1px solid rgba(133,214,158,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:var(--green-light);
+  transition:transform .3s;flex-shrink:0;
+}
+.faq-a{
+  font-size:14px;color:var(--muted);line-height:1.75;
+  max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s;
+}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:22px;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--black);
+  border-top:1px solid var(--border);
+  padding:40px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:20px;
+}
+.f-logo{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.f-logo .fp{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green-light);
+  animation:pulseAnim 2s ease infinite;
+}
+.f-links{display:flex;gap:24px;list-style:none;}
+.f-links a{font-size:13px;color:var(--muted);transition:color .2s;}
+.f-links a:hover{color:var(--green-light);}
+.f-copy{font-size:12px;color:var(--muted2);}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseAnim{0%,100%{opacity:1;box-shadow:0 0 8px var(--green-light)}50%{opacity:.5;box-shadow:none}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .hero{padding:110px 20px 60px;}
+  .ftc{display:none;}
+  .about-grid,.vs-inner{grid-template-columns:1fr;}
+  .svc-grid,.works-grid,.pricing-grid,.reviews-grid{grid-template-columns:1fr;}
+  .svc-card.wide,.wc.span2{grid-column:span 1;}
+  .wc.span2 .wc-thumb{aspect-ratio:16/10;font-size:52px;}
+  .sec{padding:70px 20px;}
+  footer{flex-direction:column;text-align:center;}
+  .f-links{justify-content:center;}
+  .cta-card{padding:36px 24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="pulse"></div>
+    Naveen
+  </div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#works">Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#cta">Contact</a></li>
+  </ul>
+  <a href="#cta" class="nav-btn">Book a Call</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="home">
+  <div class="hero-glow"></div>
+
+  <!-- Floating testimonial cards -->
+  <div class="ftc ftc1">
+    <div class="ftc-av" style="background:var(--green-dark);">R</div>
+    <div>
+      <div class="ftc-handle">@rajesh_creates</div>
+      <div class="ftc-text">This edit boosted my retention rate by 40%!</div>
+      <div class="ftc-reply">↩ Reply</div>
+    </div>
+  </div>
+  <div class="ftc ftc2">
+    <div class="ftc-av" style="background:#1a4a2e;">A</div>
+    <div>
+      <div class="ftc-handle">@ananya.ig</div>
+      <div class="ftc-text">Best edit done in 48 hours. 🔥</div>
+      <div class="ftc-reply">↩ Reply</div>
+    </div>
+  </div>
+
+  <!-- Trusted strip -->
+  <div class="trusted-strip">
+    <div class="trusted-avatars">
+      <div class="t-av">R</div>
+      <div class="t-av">A</div>
+      <div class="t-av">K</div>
+      <div class="t-av">M</div>
+    </div>
+    <div class="trusted-text">Trusted by <span>50+ Creators</span></div>
+  </div>
+
+  <h1 class="hero-heading">
+    Video Edits<br>
+    <span class="hl">That Stand Out!</span>
+  </h1>
+
+  <p class="hero-sub">Hook faster. Edit smarter. Grow your audience with scroll-stopping videos, reels, and brand films that convert.</p>
+
+  <div class="hero-actions">
+    <a href="#cta" class="btn-green">Book a Call</a>
+    <a href="#works" class="btn-outline">See My Work →</a>
+  </div>
+  <div class="hero-note">No pressure, just possibilities.</div>
+
+  <div class="badge-scroll">
+    <div class="badge-track">
+      <div class="badge-item"><span class="dot"></span>100+ Videos Delivered</div>
+      <div class="badge-item"><span class="dot"></span>2x Engagement Boost</div>
+      <div class="badge-item"><span class="dot"></span>4.9 Stars Rating</div>
+      <div class="badge-item"><span class="dot"></span>Top Rated on Fiverr</div>
+      <div class="badge-item"><span class="dot"></span>3+ Years Experience</div>
+      <div class="badge-item"><span class="dot"></span>Fast Delivery</div>
+      <div class="badge-item"><span class="dot"></span>100+ Videos Delivered</div>
+      <div class="badge-item"><span class="dot"></span>2x Engagement Boost</div>
+      <div class="badge-item"><span class="dot"></span>4.9 Stars Rating</div>
+      <div class="badge-item"><span class="dot"></span>Top Rated on Fiverr</div>
+      <div class="badge-item"><span class="dot"></span>3+ Years Experience</div>
+      <div class="badge-item"><span class="dot"></span>Fast Delivery</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ══ -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <div class="m-item"><span class="ic">🎬</span> Adobe Premiere Pro</div>
+    <div class="m-item"><span class="ic">✨</span> After Effects</div>
+    <div class="m-item"><span class="ic">🎨</span> DaVinci Resolve</div>
+    <div class="m-item"><span class="ic">📱</span> Instagram Reels</div>
+    <div class="m-item"><span class="ic">▶️</span> YouTube Shorts</div>
+    <div class="m-item"><span class="ic">🎵</span> Beat Sync Edits</div>
+    <div class="m-item"><span class="ic">💍</span> Wedding Films</div>
+    <div class="m-item"><span class="ic">🏢</span> Brand Videos</div>
+    <div class="m-item"><span class="ic">🌈</span> Color Grading</div>
+    <div class="m-item"><span class="ic">🖼️</span> Thumbnail Design</div>
+    <div class="m-item"><span class="ic">🎬</span> Adobe Premiere Pro</div>
+    <div class="m-item"><span class="ic">✨</span> After Effects</div>
+    <div class="m-item"><span class="ic">🎨</span> DaVinci Resolve</div>
+    <div class="m-item"><span class="ic">📱</span> Instagram Reels</div>
+    <div class="m-item"><span class="ic">▶️</span> YouTube Shorts</div>
+    <div class="m-item"><span class="ic">🎵</span> Beat Sync Edits</div>
+    <div class="m-item"><span class="ic">💍</span> Wedding Films</div>
+    <div class="m-item"><span class="ic">🏢</span> Brand Videos</div>
+    <div class="m-item"><span class="ic">🌈</span> Color Grading</div>
+    <div class="m-item"><span class="ic">🖼️</span> Thumbnail Design</div>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══ -->
+<section class="sec" id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="sec-label">About</div>
+      <div class="about-quote">
+        I'm the Editing Partner Behind the Creators Who Actually Grow. <strong>Fast, Reliable and Obsessed.</strong>
+      </div>
+      <div class="about-counters">
+        <div class="cnt">
+          <span class="cnt-num" data-target="100" data-suffix="+">0</span>
+          <div class="cnt-lbl">Videos Delivered</div>
+        </div>
+        <div class="cnt">
+          <span class="cnt-num" data-target="50" data-suffix="+">0</span>
+          <div class="cnt-lbl">Creators Served</div>
+        </div>
+        <div class="cnt">
+          <span class="cnt-num" data-target="10" data-suffix="M+">0</span>
+          <div class="cnt-lbl">Total Views</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="about-card">
+        <div class="about-card-top">
+          <div class="ac-name">Naveen</div>
+          <div class="ac-role">🎬 Video Editor & Motion Designer · Thanjavur, India</div>
+          <div class="ac-avail"><span class="dot"></span> Available for projects</div>
+        </div>
+        <div class="about-card-body">
+          <div class="sec-label" style="margin-bottom:12px;">Skills</div>
+          <div class="skill-row">
+            <span class="sk">Video Editing</span>
+            <span class="sk">Color Grading</span>
+            <span class="sk">Motion Graphics</span>
+            <span class="sk">Reels & Shorts</span>
+            <span class="sk">Audio Mixing</span>
+            <span class="sk">VFX</span>
+            <span class="sk">Thumbnails</span>
+            <span class="sk">Storytelling</span>
+          </div>
+          <div class="tools-label">Tools</div>
+          <div class="tool-row">
+            <span class="tool">Premiere Pro</span>
+            <span class="tool">After Effects</span>
+            <span class="tool">DaVinci Resolve</span>
+            <span class="tool">Photoshop</span>
+            <span class="tool">CapCut</span>
+            <span class="tool">Illustrator</span>
+          </div>
+          <a class="li-link" href="https://www.linkedin.com/in/naveen-thanjavur/" target="_blank">
+            <span style="font-size:16px;">in</span>
+            linkedin.com/in/naveen-thanjavur →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section class="sec" id="services">
+  <div class="svc-header">
+    <div>
+      <div class="sec-label">Services</div>
+      <h2 class="sec-title">What I Do <span class="hl">Best</span></h2>
+    </div>
+    <p class="sec-sub">I craft scroll-stopping edits that keep your audience hooked and your content looking top-tier.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card wide reveal">
+      <div class="svc-num">01 — FEATURED</div>
+      <div class="svc-name">Reels & Shorts Editing</div>
+      <p class="svc-desc">I turn raw clips into high-retention, caption-packed vertical videos that pop on Reels, Shorts, and TikTok. Great for content repurposing and explosive growth.</p>
+      <div class="svc-tags">
+        <span class="stag">Snappy Pacing</span>
+        <span class="stag">Viral-Ready</span>
+        <span class="stag">Subtitled</span>
+        <span class="stag">Beat Sync</span>
+      </div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-num">02</div>
+      <div class="svc-name">Long-Form YouTube Edits</div>
+      <p class="svc-desc">From vlogs to deep dives, I trim the fluff, tighten the pacing, and keep your viewers hooked from hook to end screen.</p>
+      <div class="svc-tags"><span class="stag">Retention-Driven</span><span class="stag">Chapters</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-num">03</div>
+      <div class="svc-name">Thumbnail Design</div>
+      <p class="svc-desc">Click-magnet thumbnails designed to maximize CTR and make your video stand out in a crowded feed.</p>
+      <div class="svc-tags"><span class="stag">Click Magnet</span><span class="stag">Photoshop</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-num">04</div>
+      <div class="svc-name">Brand & Corporate Videos</div>
+      <p class="svc-desc">Professional brand films, product promos, and company profiles that communicate your value with clarity and impact.</p>
+      <div class="svc-tags"><span class="stag">Brand Films</span><span class="stag">Promos</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-num">05</div>
+      <div class="svc-name">Wedding & Event Films</div>
+      <p class="svc-desc">Cinematic wedding highlights and event films that preserve every emotion and moment — beautifully crafted for a lifetime.</p>
+      <div class="svc-tags"><span class="stag">Cinematic</span><span class="stag">Same-Day Edit</span></div>
+    </div>
+    <div class="svc-card reveal">
+      <div class="svc-num">06</div>
+      <div class="svc-name">Content Repurposing Package</div>
+      <p class="svc-desc">One video, 10 pieces of content — cut into Shorts, Reels, quote cards, and teasers. Perfect for creators who want to stay visible everywhere.</p>
+      <div class="svc-tags"><span class="stag">Multi-Platform</span><span class="stag">Batch Delivery</span><span class="stag">Quick</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ══ -->
+<section class="sec" id="process">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="sec-label">Process</div>
+    <h2 class="sec-title">How It <span class="hl">Works?</span></h2>
+    <p class="sec-sub">A quick overview of how we work together to make your edit the best in class!</p>
+  </div>
+  <div class="process-inner">
+    <div class="proc-item reveal">
+      <div class="proc-num">01</div>
+      <div>
+        <div class="proc-name">Discovery Call</div>
+        <div class="proc-desc">We connect and discuss your vision, goals, target audience, and project requirements. No pressure, just possibilities.</div>
+      </div>
+      <div class="proc-badge">Free Call</div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-num">02</div>
+      <div>
+        <div class="proc-name">Drop Your Footage</div>
+        <div class="proc-desc">Upload your raw clips via WeTransfer, Google Drive, or Dropbox — whatever works for you. Include music and references.</div>
+      </div>
+      <div class="proc-badge">Easy Upload</div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-num">03</div>
+      <div>
+        <div class="proc-name">We Do Our Magic</div>
+        <div class="proc-desc">I cut, trim, color-grade, sync to music, and add motion graphics and SFX. You sit back while I craft something scroll-stopping.</div>
+      </div>
+      <div class="proc-badge">In Progress ✦</div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-num">04</div>
+      <div>
+        <div class="proc-name">Feedback? Easy</div>
+        <div class="proc-desc">Want something changed? I offer smooth revision rounds to make sure everything is exactly how you imagined.</div>
+      </div>
+      <div class="proc-badge">Revisions Included</div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-num">05</div>
+      <div>
+        <div class="proc-name">Upload & Grow</div>
+        <div class="proc-desc">I deliver your final video in ready-to-upload format — optimized for your platform. Time to go viral.</div>
+      </div>
+      <div class="proc-badge">🎉 Done!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORKS ══ -->
+<section class="sec" id="works">
+  <div style="max-width:1100px;margin:0 auto 48px;">
+    <div class="sec-label">Hall of Fame</div>
+    <h2 class="sec-title">My Recent Edits <span class="hl">in Action</span></h2>
+    <p class="sec-sub">From brand films to reels — here's a glimpse of how I turn raw footage into scroll-stopping content.</p>
+  </div>
+  <div class="works-filter">
+    <button class="wf on">All</button>
+    <button class="wf">Reels</button>
+    <button class="wf">Brand Videos</button>
+    <button class="wf">Wedding Films</button>
+    <button class="wf">YouTube</button>
+    <button class="wf">Motion Graphics</button>
+  </div>
+  <div class="works-grid">
+    <div class="wc span2 reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#0e2e1a,#1a5a34);">
+        🎬
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">Brand Video · 500K Views</div>
+        <div class="wc-title">Fashion Brand Product Launch — Perfectly Edited</div>
+        <div class="wc-meta">From raw footage to viral content that resonates.</div>
+      </div>
+    </div>
+    <div class="wc reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#0a1a0f,#143322);">
+        💍
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">Wedding Film</div>
+        <div class="wc-title">Cinematic Wedding Highlight Reel</div>
+        <div class="wc-meta">Chennai · 8 min cinematic film</div>
+      </div>
+    </div>
+    <div class="wc reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#111a0e,#203318);">
+        📱
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">Instagram Reels · 10M+ Views</div>
+        <div class="wc-title">Viral Reel Series — @ananya.ig</div>
+        <div class="wc-meta">15 reels over 3 months</div>
+      </div>
+    </div>
+    <div class="wc reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#0f1a10,#1c3520);">
+        🎵
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">Music Reel · 2M Views</div>
+        <div class="wc-title">Artist Promo — Beat Sync Edit</div>
+        <div class="wc-meta">Tamil indie artist release</div>
+      </div>
+    </div>
+    <div class="wc reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#101a12,#1e3324);">
+        ▶️
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">YouTube · Monthly Retainer</div>
+        <div class="wc-title">200K Channel — 8 Videos/Month</div>
+        <div class="wc-meta">@karthik.yt long-form content</div>
+      </div>
+    </div>
+    <div class="wc reveal">
+      <div class="wc-thumb" style="background:linear-gradient(135deg,#0d1f10,#184020);">
+        🏢
+        <div class="wc-play"><div class="play-circle">▶</div></div>
+      </div>
+      <div class="wc-info">
+        <div class="wc-cat">Corporate Film</div>
+        <div class="wc-title">Real Estate Brand — Company Profile</div>
+        <div class="wc-meta">Used in investor pitch deck</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROBLEMS vs SOLUTION ══ -->
+<section class="sec" id="solution">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="sec-label">Our Solution</div>
+    <h2 class="sec-title">Why Most Creators <span class="hl">Burn Out</span></h2>
+    <p class="sec-sub">A quick side-by-side of the struggles you shouldn't have to deal with — and how I make sure you don't.</p>
+  </div>
+  <div class="vs-inner">
+    <div class="vs-col reveal">
+      <div class="vs-head prob">❌ Creator's Problem</div>
+      <ul class="vs-list">
+        <li><span class="xi">✗</span> Editing takes me forever.</li>
+        <li><span class="xi">✗</span> I miss uploads trying to finish videos.</li>
+        <li><span class="xi">✗</span> I hate editing. I just want to record.</li>
+        <li><span class="xi">✗</span> My videos don't look pro enough.</li>
+        <li><span class="xi">✗</span> Captions are a pain to add.</li>
+      </ul>
+    </div>
+    <div class="vs-col sol reveal">
+      <div class="vs-head solu">✅ Naveen's Solution</div>
+      <ul class="vs-list">
+        <li><span class="ci">✓</span> Done-for-you edits, always on time.</li>
+        <li><span class="ci">✓</span> Fast turnaround — never miss a deadline.</li>
+        <li><span class="ci">✓</span> You record. I handle the rest.</li>
+        <li><span class="ci">✓</span> Cinematic, clean, and branded.</li>
+        <li><span class="ci">✓</span> Burned-in, style-matched captions.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section class="sec" id="pricing">
+  <div style="max-width:1000px;margin:0 auto;text-align:center;">
+    <div class="sec-label" style="margin:0 auto 16px;">Pricing</div>
+    <h2 class="sec-title">Simple <span class="hl">Plans</span></h2>
+    <p class="sec-sub" style="margin:0 auto;">Whether you're uploading weekly or scaling fast, I've got a plan tailored to your content flow.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pc reveal">
+      <div class="pc-plan">Starter Plan</div>
+      <div class="pc-price">₹999</div>
+      <div class="pc-period">/ video</div>
+      <div class="pc-note">For creators who need quick, clean edits on a budget.</div>
+      <div class="pc-div"></div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:16px;">Features included:</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 1 Reel / Short (up to 60 sec)</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 2 revision rounds</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Basic color correction &amp; audio sync</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 2–3 day turnaround</div>
+      <div class="pc-feat"><span class="f-check">✓</span> WhatsApp support</div>
+      <a href="#cta" class="pc-btn pc-btn-o">Book a Call</a>
+    </div>
+    <div class="pc pop reveal">
+      <div class="pop-badge">⭐ Popular</div>
+      <div class="pc-plan">Pro Plan</div>
+      <div class="pc-price">₹2,499</div>
+      <div class="pc-period">/ video</div>
+      <div class="pc-note">For brands and YouTubers who want consistent premium results.</div>
+      <div class="pc-div"></div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:16px;">Features included:</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Video up to 5 minutes</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 4 revision rounds</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Cinematic color grading &amp; SFX</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Motion graphics &amp; subtitles</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Custom thumbnail design</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 3–5 day turnaround</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Video call support</div>
+      <a href="#cta" class="pc-btn pc-btn-f">Book a Call</a>
+    </div>
+    <div class="pc reveal">
+      <div class="pc-plan">Custom Plan</div>
+      <div class="pc-price" style="font-size:42px;">Custom</div>
+      <div class="pc-period">/ month</div>
+      <div class="pc-note">For agencies and creators scaling their content operation.</div>
+      <div class="pc-div"></div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:16px;">Features included:</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 10 to 40+ video edits/month</div>
+      <div class="pc-feat"><span class="f-check">✓</span> 24h / 48h / 72h delivery</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Title, thumbnail &amp; retention tips</div>
+      <div class="pc-feat"><span class="f-check">✓</span> Shorts, Reels, long-form, podcasts</div>
+      <div class="pc-feat"><span class="f-check">✓</span> One edit = multi-channel assets</div>
+      <a href="#cta" class="pc-btn pc-btn-o">Book a Call</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ REVIEWS ══ -->
+<section class="sec" id="reviews">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="sec-label">Reviews</div>
+    <h2 class="sec-title">Loved by <span class="hl">Creators</span></h2>
+    <p class="sec-sub">I don't just deliver edits — I make creators look good, grow faster, and stay consistent.</p>
+  </div>
+  <div class="reviews-grid" style="margin-top:48px;">
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">R</div>
+        <div>
+          <div class="rv-handle">@rajesh_creates</div>
+        </div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">Bro who edits your videos? The pacing and cuts are SO clean. This edit boosted my retention rate by 40%!</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">A</div>
+        <div><div class="rv-handle">@ananya.ig</div></div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">Whoever's editing your videos now… they deserve a raise. This was smooth af. My reels hit 1M views this week!</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">K</div>
+        <div><div class="rv-handle">@karthik.yt</div></div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">Editing leveled up big time. Timing, cuts, music — everything's just right. Channel grew from 50K to 200K!</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">M</div>
+        <div><div class="rv-handle">@meera.brand</div></div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">Noticed the pacing and flow are so much better lately. Product launch reel hit 500K views in 48 hours. Incredible work!</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">S</div>
+        <div><div class="rv-handle">@sathish.agency</div></div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">This feels super polished now. Loving the new vibe — Naveen is killing it. Given him 20+ projects, never disappointed.</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+    <div class="rv reveal">
+      <div class="rv-header">
+        <div class="rv-av">P</div>
+        <div><div class="rv-handle">@priya.wedding</div></div>
+        <div class="rv-twitter">𝕏</div>
+      </div>
+      <p class="rv-text">He edited our wedding highlight and we cried watching it. Every emotion was captured perfectly. It's a memory forever.</p>
+      <div class="rv-reply">↩ Reply</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sec" id="cta">
+  <div class="cta-inner">
+    <div class="sec-label" style="margin:0 auto 16px;">Contact</div>
+    <h2 class="sec-title">Book a <span class="hl">15-min Intro Call</span></h2>
+    <div class="cta-card reveal">
+      <div class="cta-title">Let's Build Something Great Together</div>
+      <p class="cta-sub">No pressure. Just a quick chat about your project, your goals, and how I can help you grow.</p>
+      <a href="mailto:naveen@email.com" class="btn-green" style="display:inline-block;padding:14px 36px;font-size:16px;font-weight:700;border-radius:10px;">Book a Call →</a>
+      <div class="cta-email">Prefer to Email? <a href="mailto:naveen@email.com">naveen@email.com</a></div>
+      <div class="cta-email" style="margin-top:8px;">
+        LinkedIn: <a href="https://www.linkedin.com/in/naveen-thanjavur/" target="_blank">linkedin.com/in/naveen-thanjavur</a>
+      </div>
+      <div class="cta-tags">
+        <span class="cta-tag">Business Inquiry</span>
+        <span class="cta-tag">Want My Videos Edited</span>
+        <span class="cta-tag">Send Me Samples</span>
+        <span class="cta-tag">Long-Term Collaboration</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="sec" id="faq">
+  <div style="max-width:780px;margin:0 auto;">
+    <div class="sec-label">FAQ</div>
+    <h2 class="sec-title">Got Questions? <span class="hl">I Got Answers</span></h2>
+    <p class="sec-sub">Straightforward, no-fluff answers to help you feel confident about working with me.</p>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item open">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What types of videos do you edit?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">I specialize in all types of video content — Instagram Reels, YouTube Shorts, long-form YouTube videos, wedding films, brand/corporate videos, music videos, product promos, and more. If it's a video, I can edit it.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        How fast is the delivery?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Basic edits are delivered in 2–3 days. Pro edits take 3–5 days. Custom/Elite projects are discussed based on scope. Rush delivery is available for an additional fee.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Can I request revisions?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">Yes! Basic includes 2 revision rounds, Pro includes 4 rounds, and Custom plans include unlimited revisions. Your satisfaction is my priority.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        Do I need to provide all the footage and assets?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">You provide the raw footage and any specific music/assets you want. I handle everything else — stock footage, sound effects, music, transitions, and graphics are sourced by me as needed.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        What if I'm not happy with the result?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">I work with you through revisions until you're 100% satisfied. I've never left a client unhappy. Your success is my success.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="f-logo">
+    <div class="fp"></div>
+    Naveen Edits
+  </div>
+  <ul class="f-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#works">Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="https://www.linkedin.com/in/naveen-thanjavur/" target="_blank">LinkedIn</a></li>
+  </ul>
+  <div class="f-copy">© 2025 Naveen · Thanjavur, Tamil Nadu, India</div>
+</footer>
+
+<script>
+// FAQ
+function toggleFaq(btn){
+  const item=btn.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+// Filter
+document.querySelectorAll('.wf').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.wf').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  });
+});
+
+// Scroll reveal
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'),i%4*90);
+    }
+  });
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Counter animation
+function animCount(el){
+  const target=parseInt(el.dataset.target);
+  const suffix=el.dataset.suffix||'';
+  let start=0,dur=1800,startTime=null;
+  function step(ts){
+    if(!startTime)startTime=ts;
+    const prog=Math.min((ts-startTime)/dur,1);
+    const ease=1-Math.pow(1-prog,3);
+    el.textContent=Math.floor(ease*target)+suffix;
+    if(prog<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const cntObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('[data-target]').forEach(el=>animCount(el));
+      cntObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.about-counters').forEach(el=>cntObs.observe(el));
+</script>
+</body>
+</html>
